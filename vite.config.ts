@@ -8,15 +8,5 @@ export default defineConfig({
       vue: '@vue/compat'
     }
   },
-  plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          compatConfig: {
-            MODE: 3
-          }
-        }
-      }
-    })
-  ]
+  plugins: [vue()]
 })
