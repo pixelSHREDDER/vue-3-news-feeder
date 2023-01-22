@@ -9,14 +9,23 @@ export default {
     Article
   },
   props: {
-    msg: String,
+    items: Object,
   }
 }
 </script>
 
 <template>
 <b-container fluid>
-<b-card-group>
+<b-card-group v-for="article in articles">
+    <Article
+      :body=article.body
+      imgAlt="Image Alt Text"
+      imgSrc="https://picsum.photos/600/300/?image=25"
+      :link=article.link
+      :meta=article.meta
+      :title=article.title />  
+  </b-card-group>
+  <b-card-group>
   <Article
     body="Lorem Ipsum"
     imgAlt="Image Alt Text"
@@ -44,7 +53,6 @@ export default {
 
 
 
-  <h1>{{ msg }}</h1>
 
   <div class="card">
     <button type="button" @click="count++">count is {{ count }}</button>
