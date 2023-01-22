@@ -1,29 +1,45 @@
-<script setup lang="ts">
+<script>
 import { ref } from 'vue'
-
-defineProps<{ msg: string }>()
+import Article from './Article.vue'
 
 const count = ref(0)
+
+export default {
+  components: {
+    Article
+  },
+  props: {
+    msg: String,
+  }
+}
 </script>
 
 <template>
-<div>
-  <b-card
-    title="Card Title"
-    img-src="https://picsum.photos/600/300/?image=25"
-    img-alt="Image"
-    img-top
-    tag="article"
-    style="max-width: 20rem;"
-    class="mb-2"
-  >
-    <b-card-text>
-      Some quick example text to build on the card title and make up the bulk of the card's content.
-    </b-card-text>
-
-    <b-button href="#" variant="primary">Go somewhere</b-button>
-  </b-card>
-</div>
+<b-container fluid>
+<b-card-group>
+  <Article
+    body="Lorem Ipsum"
+    imgAlt="Image Alt Text"
+    imgSrc="https://picsum.photos/600/300/?image=25"
+    link="https://cnn.com"
+    meta="1/1/2023 | CNN.com Headlines"
+    title="Testing 1" />
+  <Article
+    body="Lorem Ipsum"
+    imgAlt="Image Alt Text"
+    imgSrc="https://picsum.photos/600/300/?image=25"
+    link="https://cnn.com"
+    meta="1/1/2023 | CNN.com Headlines"
+    title="Testing 2" />
+  <Article
+    body="Lorem Ipsum"
+    imgAlt="Image Alt Text"
+    imgSrc="https://picsum.photos/600/300/?image=25"
+    link="https://cnn.com"
+    meta="1/1/2023 | CNN.com Headlines"
+    title="Testing 3" />
+  </b-card-group>
+</b-container>
 
 
 
