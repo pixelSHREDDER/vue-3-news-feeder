@@ -1,170 +1,70 @@
 <script>
-import HelloWorld from './components/HelloWorld.vue';
-import RSSService from './services/RSSService.js';
-//import RSSParser from 'rss-parser';
-
-//const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
+import Viewer from './components/Viewer.vue';
 
 export default {
+  components: {
+    Viewer
+  },
   data() {
 		return {
-      allArticles: [],
-			availableFeeds: [],
-			selectedFeeds: [],
-      showLoader: false,
+      feedOptions: [
+        { text: 'The Verge', value: 'https://www.theverge.com/web/rss/index.xml' },
+        { text: 'Engadget', value: 'https://www.engadget.com/rss-full.xml' },
+      ],
+      selectedFeeds: ["https://www.theverge.com/web/rss/index.xml", "https://www.engadget.com/rss-full.xml"],
+      loading: true,
 		}
 	},
-  /*computed: {
-		articles: function() {
-			if (this.allArticles.length === 0) return [];
-
-			let articles = [];
-
-      if (this.selectedFeeds.length) {
-				articles = this.allArticles.filter(article => article.feedUrl === this.selectedFeed.feedUrl);
-			} else {
-				articles = this.allArticles;
-			}
-
-      articles = articles.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-			return articles;
-		}
-	},*/
-  created() {
-    //let parser = new RSSParser();
-    //let parser = null;
-    //this.loadFeeds(parser, 'https://www.reddit.com/.rss');
-    this.loadFeeds();
-    this.showLoader = true;
-  },
-  methods: {
-    async loadFeeds(parser, feedUrl) {
-      RSSService.getFeeds()
-      .then(
-        (articles => {
-          this.$set(this, "articles", articles);
-        }).bind(this)
-      );
-      console.log(this.articles);
-      //let feed = await parser.parseURL('https://www.reddit.com/.rss');
-      /*fetch(encodeURIComponent('https://www.reddit.com/.rss'))
-				.then(res => res.json())
-				.then(res => {*/
-
-      /*const res = await fetch(`https://api.allorigins.win/get?url=${feedUrl}`);
-      const { contents } = await res.json();
-      parser.parseString(contents, function(err, feed) {
-            if (err) throw err;
-            feed.items.forEach(item => {
-            this.articles.push({
-              body: item.contentSnippet,
-              date: item.isoDate,
-              link: item.link,
-              meta: `${item.pubDate} | ${item.creator}`,
-              feedUrl: feed.feedUrl,
-              title: item.title,
-            });
-            console.log(item);
-          });
-          this.showLoader = false;
-        });*/
-
-      /*const feed = new window.DOMParser().parseFromString(contents, "text/xml");
-      const articles = feed.querySelectorAll("item");
-      console.log(feed);
-      this.articles = [...articles].map((el) => ({
-        body: el.querySelector("content").innerHTML,
-        date: el.querySelector("date").innerHTML,
-        link: el.querySelector("link").innerHTML,
-        meta: `${el.querySelector("date").innerHTML} | ${el.querySelector("author").innerHTML}`,
-        feedUrl: feedUrl,
-        title: el.querySelector("title").innerHTML,
-      }));
-
-      this.showLoader = false;*/
-
-
-
-
-          /*parser.parseURL(CORS_PROXY + 'https://www.reddit.com/.rss', function(err, feed) {
-            if (err) throw err;
-            feed.items.forEach(item => {
-            this.articles.push({
-              body: item.contentSnippet,
-              date: item.isoDate,
-              link: item.link,
-              meta: `${item.pubDate} | ${item.creator}`,
-              feedUrl: feed.feedUrl,
-              title: item.title,
-            });
-            console.log(item);
-          });
-          this.showLoader = false;
-        });*/
-
-
-
-
-				/*fetch(rssAPI+encodeURIComponent(this.addURL))
-				.then(res => res.json())
-				.then(res => {
-					// ok for now, assume no error, cuz awesome
-					this.addURL = '';
-
-					//assign a color first
-					res.feed.color = colors[this.feeds.length % (colors.length-1)];
-
-					// ok, add the items (but we append the url as a fk so we can filter later)
-					res.feed.items.forEach(item => {
-						item.feedPk = this.addURL;
-						item.feedColor = res.feed.color;
-						this.allItems.push(item);
-					});
-
-					// delete items
-					delete res.feed.items;
-
-					// add the original rss link
-					res.feed.rsslink = this.addURL;
-
-					this.feeds.push(res.feed);
-					this.addFeedDialog = false;
-
-					//always hide intro
-					this.showIntro = false;
-
-					//persist the feed, but not the items
-					this.storeFeeds();
-				});
-			}*/
-    }
-  }
+  created() { setTimeout(() => this.loading = false, 2000) }
 }
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld :articles=articles />
+  <b-navbar toggleable="lg" type="dark" variant="primary" fixed="top">
+    <b-navbar-brand>State-of-the-Art RSS Reader 2000</b-navbar-brand>
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav right>
+      <b-navbar-nav>
+        <b-nav-form>
+          <b-form-group
+            v-slot="{ ariaDescribedby }">
+              <b-form-checkbox-group
+                v-model="selectedFeeds"
+                :options="feedOptions"
+                :aria-describedby="ariaDescribedby"
+                switches
+              ></b-form-checkbox-group>
+            </b-form-group>
+          </b-nav-form>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+  <b-skeleton-wrapper :loading="loading">
+    <template #loading>
+      <b-spinner variant="primary" type="grow" class="mt-2"></b-spinner>
+    </template>
+    <Viewer :selectedFeeds="selectedFeeds" />
+  </b-skeleton-wrapper>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
+<style>
+.navbar-brand {
+  margin-left: 1rem;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.navbar-nav .form-inline {
+  padding-left: 1rem;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.container-fluid {
+  margin-top: 60px;
+}
+.b-skeleton-wrapper {
+  padding-top: 60px;
+  text-align: center;
+}
+.b-spinner {
+  position: absolute;
+  top: 60px;
+  left: 50%;
 }
 </style>

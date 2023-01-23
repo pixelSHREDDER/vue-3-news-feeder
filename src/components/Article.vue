@@ -1,11 +1,12 @@
 <script>
 export default {
     props: {
-        body: String,
+        author: String,
+        content: String,
         imgAlt: String,
         imgSrc: String,
         link: String,
-        meta: String,
+        pubDate: String,
         title: String
     }
 };
@@ -13,25 +14,35 @@ export default {
 
 <template>
   <b-card
-    :img-alt="imgAlt"
+    :img-alt=imgAlt
     :img-src=imgSrc
-    :sub-title="meta"
-    :title="title"
-    class="mb-2"
+    :title=title
     img-top
-    style="max-width: 20rem;"
     tag="article"
   >
     <b-card-text>
-      {{body}}
+        <small class="text-muted">{{pubDate}}<br/>By {{author}}</small>
+        <hr>
+      {{content}}
     </b-card-text>
 
-    <b-button :href="link" variant="primary">Read more</b-button>
+    
+    <template #footer>
+        <b-button :href=link target="_blank" variant="primary">Read more</b-button>
+      </template>
   </b-card>
 </template>
 
-<style scoped>
-.read-the-docs {
-  color: #888;
+<style>
+.card-body {
+    display: grid;
+    grid-template-rows: 1fr auto;
+}
+.btn {
+    width: 100%;
+}
+.card-text {
+    max-height: 48vh;
+    overflow: hidden;
 }
 </style>
