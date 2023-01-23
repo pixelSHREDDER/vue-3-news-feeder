@@ -1,9 +1,8 @@
-<script src="/node_modules/rss-parser/dist/rss-parser.min.js"></script>
 <script>
 import HelloWorld from './components/HelloWorld.vue';
-//import RSSParser from 'rss-parser';
+import RSSParser from 'rss-parser';
 
-const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
+//const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
 
 export default {
   data() {
@@ -33,17 +32,21 @@ export default {
 	},
   created() {
     let parser = new RSSParser();
-    this.loadFeeds(parser);
+    //let parser = null;
+    this.loadFeeds(parser, 'https://www.reddit.com/.rss');
     //this.loadFeeds();
     this.showLoader = true;
   },
   methods: {
-    loadFeeds: (parser) => {
+    async loadFeeds(parser, feedUrl) {
       //let feed = await parser.parseURL('https://www.reddit.com/.rss');
       /*fetch(encodeURIComponent('https://www.reddit.com/.rss'))
 				.then(res => res.json())
 				.then(res => {*/
-          parser.parseURL(CORS_PROXY + 'https://www.reddit.com/.rss', function(err, feed) {
+
+      const res = await fetch(`https://api.allorigins.win/get?url=${feedUrl}`);
+      const { contents } = await res.json();
+      parser.parseString(contents, function(err, feed) {
             if (err) throw err;
             feed.items.forEach(item => {
             this.articles.push({
@@ -58,6 +61,43 @@ export default {
           });
           this.showLoader = false;
         });
+
+      /*const feed = new window.DOMParser().parseFromString(contents, "text/xml");
+      const articles = feed.querySelectorAll("item");
+      console.log(feed);
+      this.articles = [...articles].map((el) => ({
+        body: el.querySelector("content").innerHTML,
+        date: el.querySelector("date").innerHTML,
+        link: el.querySelector("link").innerHTML,
+        meta: `${el.querySelector("date").innerHTML} | ${el.querySelector("author").innerHTML}`,
+        feedUrl: feedUrl,
+        title: el.querySelector("title").innerHTML,
+      }));
+
+      this.showLoader = false;*/
+
+
+
+
+          /*parser.parseURL(CORS_PROXY + 'https://www.reddit.com/.rss', function(err, feed) {
+            if (err) throw err;
+            feed.items.forEach(item => {
+            this.articles.push({
+              body: item.contentSnippet,
+              date: item.isoDate,
+              link: item.link,
+              meta: `${item.pubDate} | ${item.creator}`,
+              feedUrl: feed.feedUrl,
+              title: item.title,
+            });
+            console.log(item);
+          });
+          this.showLoader = false;
+        });*/
+
+
+
+
 				/*fetch(rssAPI+encodeURIComponent(this.addURL))
 				.then(res => res.json())
 				.then(res => {
