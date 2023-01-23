@@ -1,6 +1,7 @@
 <script>
 import HelloWorld from './components/HelloWorld.vue';
-import RSSParser from 'rss-parser';
+import RSSService from './services/RSSService.js';
+//import RSSParser from 'rss-parser';
 
 //const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
 
@@ -13,7 +14,7 @@ export default {
       showLoader: false,
 		}
 	},
-  computed: {
+  /*computed: {
 		articles: function() {
 			if (this.allArticles.length === 0) return [];
 
@@ -29,22 +30,29 @@ export default {
 
 			return articles;
 		}
-	},
+	},*/
   created() {
-    let parser = new RSSParser();
+    //let parser = new RSSParser();
     //let parser = null;
-    this.loadFeeds(parser, 'https://www.reddit.com/.rss');
-    //this.loadFeeds();
+    //this.loadFeeds(parser, 'https://www.reddit.com/.rss');
+    this.loadFeeds();
     this.showLoader = true;
   },
   methods: {
     async loadFeeds(parser, feedUrl) {
+      RSSService.getFeeds()
+      .then(
+        (articles => {
+          this.$set(this, "articles", articles);
+        }).bind(this)
+      );
+      console.log(this.articles);
       //let feed = await parser.parseURL('https://www.reddit.com/.rss');
       /*fetch(encodeURIComponent('https://www.reddit.com/.rss'))
 				.then(res => res.json())
 				.then(res => {*/
 
-      const res = await fetch(`https://api.allorigins.win/get?url=${feedUrl}`);
+      /*const res = await fetch(`https://api.allorigins.win/get?url=${feedUrl}`);
       const { contents } = await res.json();
       parser.parseString(contents, function(err, feed) {
             if (err) throw err;
@@ -60,7 +68,7 @@ export default {
             console.log(item);
           });
           this.showLoader = false;
-        });
+        });*/
 
       /*const feed = new window.DOMParser().parseFromString(contents, "text/xml");
       const articles = feed.querySelectorAll("item");
