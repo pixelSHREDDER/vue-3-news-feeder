@@ -6,6 +6,11 @@ export default {
     Article
   },
   computed: {
+    async allRealArticles() {
+      let data = await fetch('https://newsapi.org/v2/everything?q=keyword&apiKey=d021fd4d50684e6daa7e25a10172958e');
+
+      console.log(data);
+    },
 	selectedArticles() {
 		let selectedArticles = [...this.allArticles];
 		
@@ -34,7 +39,10 @@ export default {
       link: "https://www.theverge.com/2023/1/19/23562947/twitter-third-party-client-tweetbot-twitterific-ban-rules",
       id: "\nhttps://www.theverge.com/2023/1/19/23562947/twitter-third-party-client-tweetbot-twitterific-ban-rules\n",
       author: "Mitchell Clark",
-      feedUrl: "https://www.theverge.com/web/rss/index.xml"
+      feedUrl: "https://www.theverge.com/web/rss/index.xml",
+      source: {
+        name: "The Verge"
+      }
     },
     {
       pubDate: "Jan 19, 2023 4:41 PM",
@@ -47,7 +55,10 @@ export default {
       link: "https://www.theverge.com/2023/1/19/23562966/cnet-ai-written-stories-red-ventures-seo-marketing",
       id: "\nhttps://www.theverge.com/2023/1/19/23562966/cnet-ai-written-stories-red-ventures-seo-marketing\n",
       author: "Mia Sato & James Vincent",
-      feedUrl: "https://www.theverge.com/web/rss/index.xml"
+      feedUrl: "https://www.theverge.com/web/rss/index.xml",
+      source: {
+        name: "The Verge"
+      }
     },
     {
       pubDate: "Jan 19, 2023 2:37 PM",
@@ -60,7 +71,10 @@ export default {
       link: "https://www.theverge.com/2023/1/19/23562472/us-state-department-times-new-roman-calibri-accessibility",
       id: "\nhttps://www.theverge.com/2023/1/19/23562472/us-state-department-times-new-roman-calibri-accessibility\n",
       author: "Mitchell Clark",
-      feedUrl: "https://www.theverge.com/web/rss/index.xml"
+      feedUrl: "https://www.theverge.com/web/rss/index.xml",
+      source: {
+        name: "The Verge"
+      }
     },
     {
       pubDate: "Jan 22, 2023 11:34 PM",
@@ -73,7 +87,10 @@ export default {
       link: "https://www.engadget.com/apple-may-have-scrapped-plans-for-a-new-homepod-mini-233428519.html?src=rss",
       id: "\nhttps://www.engadget.com/apple-may-have-scrapped-plans-for-a-new-homepod-mini-233428519.html?src=rss\n",
       author: "Igor Bonifacic",
-      feedUrl: "https://www.engadget.com/rss-full.xml"
+      feedUrl: "https://www.engadget.com/rss-full.xml",
+      source: {
+        name: "Engadget"
+      }
     },
       ],
 			availableFeeds: ["https://www.theverge.com/web/rss/index.xml", "https://www.engadget.com/rss-full.xml"],
@@ -81,22 +98,37 @@ export default {
 	},
   props: {
     selectedFeeds: Array
+  },
+  created() {
+    this.getArticles();
+  },
+  methods: {
+    async getArticles() {
+      await fetch('https://newsapi.org/v2/top-headlines?country=us&apiKey=d021fd4d50684e6daa7e25a10172958e')
+      .then(res => res.json())
+      .then(data => {
+        console.log(data.articles);
+        this.allArticles = data.articles;
+      })
+    }
   }
 }
 </script>
 
 <template>
   <b-container fluid>
-    <b-card-group>
+    <b-row>
+      <b-col col xs="12" sm="6" md="4" xl="3" v-for="article in allArticles.slice(0, 20)">
         <Article
-        v-for="article in selectedArticles" :key="article.link"
-          :author=article.author  
-          :content=article.content
+          :key="article.link"
+          :author="article.author + ' | ' + article.source.name"
+          :content=article.description
           :imgAlt=article.imgAlt
-          :imgSrc=article.imgSrc
-          :link=article.link
-          :pubDate=article.pubDate
+          :imgSrc=article.urlToImage
+          :link=article.url
+          :pubDate=article.publishedAt
           :title=article.title />  
-      </b-card-group>
+      </b-col>
+    </b-row>
   </b-container>  
 </template>
